@@ -1,0 +1,28 @@
+<% layout('layout') -%>
+
+<h2>Dashboard - My Recipes</h2>
+<a href="/recipes/add" class="btn btn-primary mb-3">Add a new recipe</a>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>the address</th>
+      <th>Date added</th>
+      <th>Control</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% recipes.forEach(recipe => { %>
+      <tr>
+        <td><%= recipe.title %></td>
+        <td><%= recipe.createdAt.toLocaleDateString() %></td>
+        <td>
+          <a href="/recipes/edit/<%= recipe._id %>" class="btn btn-sm btn-warning">amendment</a>
+          <form action="/recipes/<%= recipe._id %>?_method=DELETE" method="POST" style="display:inline;">
+            <button class="btn btn-sm btn-danger">delete</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

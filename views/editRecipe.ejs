@@ -1,0 +1,22 @@
+<% layout('layout') -%>
+
+<h2>Edit recipe</h2>
+<form action="/recipes/<%= recipe._id %>?_method=PUT" method="POST">
+  <div class="mb-3">
+    <label>the address</label>
+    <input type="text" name="title" class="form-control" value="<%= recipe.title %>" required>
+  </div>
+  <div class="mb-3">
+    <label>the components</label>
+    <textarea name="ingredients" class="form-control" rows="3" required><%= recipe.ingredients %></textarea>
+  </div>
+  <div class="mb-3">
+    <label>Steps</label>
+    <textarea name="instructions" class="form-control" rows="4" required><%= recipe.instructions %></textarea>
+  </div>
+  <div class="mb-3">
+    <label>Image link (optional)</label>
+    <input type="text" name="image" class="form-control" value="<%= recipe.image %>">
+  </div>
+  <button class="btn btn-primary">update</button>
+</form>
