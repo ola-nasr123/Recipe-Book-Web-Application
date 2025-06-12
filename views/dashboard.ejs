@@ -1,28 +1,57 @@
-<% layout('layout') -%>
+<%- include('partials/header') %>
 
-<h2>Dashboard - My Recipes</h2>
-<a href="/recipes/add" class="btn btn-primary mb-3">Add a new recipe</a>
+<div class="container mt-5">
+  <% if (success_msg) { %>
+    <div class="alert alert-success text-center">
+      <%= success_msg %>
+    </div>
+  <% } %>
 
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th>the address</th>
-      <th>Date added</th>
-      <th>Control</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% recipes.forEach(recipe => { %>
+  <% if (error_msg) { %>
+    <div class="alert alert-danger text-center">
+      <%= error_msg %>
+    </div>
+  <% } %>
+
+  <h2 class="mb-4">Dashboard - My Recipes</h2>
+
+  <a href="/recipes/add" class="btn btn-primary mb-3">Add a new recipe</a>
+
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
       <tr>
-        <td><%= recipe.title %></td>
-        <td><%= recipe.createdAt.toLocaleDateString() %></td>
-        <td>
-          <a href="/recipes/edit/<%= recipe._id %>" class="btn btn-sm btn-warning">amendment</a>
-          <form action="/recipes/<%= recipe._id %>?_method=DELETE" method="POST" style="display:inline;">
-            <button class="btn btn-sm btn-danger">delete</button>
-          </form>
-        </td>
+        <th>Title</th>
+        <th>Date Added</th>
+        <th>Actions</th>
       </tr>
-    <% }) %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% if (recipes.length === 0) { %>
+        <tr>
+          <td colspan="3" class="text-center">No recipes found</td>
+        </tr>
+      <% } else { %>
+        <% recipes.forEach(function(recipe) { %>
+          <tr>
+            <td><%= recipe.title %></td>
+            <td>
+              <% if (recipe.date) { %>
+                <%= recipe.date.toDateString() %>
+              <% } else { %>
+                Not specified
+              <% } %>
+            </td>
+            <td>
+              <a href="/recipes/edit/<%= recipe._id %>" class="btn btn-warning btn-sm">Edit</a>
+              <form action="/recipes/delete/<%= recipe._id %>" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('partials/footer') %>

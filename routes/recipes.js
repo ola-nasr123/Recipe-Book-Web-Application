@@ -1,25 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const Recipe = require('../models/Recipe');
+const Recipe = require('../models/recipe');
 const { ensureAuthenticated } = require('../config/auth');
 
-router.get('/', (req, res) => {
-  Recipe.find().sort({ createdAt: -1 })
-    .then(recipes => res.render('index', { recipes }))
-    .catch(err => {
-      console.log(err);
-      res.redirect('/');
-    });
-});
 
 router.get('/dashboard', ensureAuthenticated, (req, res) => {
-  Recipe.find({ user: req.user.id }).sort({ createdAt: -1 })
-    .then(recipes => res.render('dashboard', { recipes }))
-    .catch(err => {
-      console.log(err);
+  Recipe.find({ user: req.user.id }).lean()
+    .then((recipes) => {
+      res.render('dashboard', { recipes });
+    })
+    .catch((err) => {
+      console.error(err);
       res.redirect('/');
     });
-});
+})
 
 router.get('/add', ensureAuthenticated, (req, res) => {
   res.render('addRecipe');
@@ -77,7 +71,7 @@ router.put('/:id', ensureAuthenticated, (req, res) => {
       recipe.instructions = instructions;
       recipe.image = image;
 
-      return recipe.save(); 
+      return recipe.save();
     })
     .then(() => {
       req.flash('success_msg', 'The recipe has been modified');
@@ -110,8 +104,8 @@ router.delete('/:id', ensureAuthenticated, (req, res) => {
 });
 
 router.get('/search', (req, res) => {
-  const searchTerm = req.query.term; 
-  const regex = new RegExp(searchTerm, 'i'); 
+  const searchTerm = req.query.term;
+  const regex = new RegExp(searchTerm, 'i');
 
   Recipe.find({
     $or: [
@@ -120,11 +114,63 @@ router.get('/search', (req, res) => {
     ]
   })
     .then(recipes => {
-      res.render('index', { recipes }); 
+      res.render('index', { recipes });
     })
     .catch(err => {
       console.log(err);
       res.redirect('/');
+    });
+});
+
+
+
+router.post('/delete/:id', ensureAuthenticated, (req, res) => {
+  Recipe.findById(req.params.id)
+    .then(recipe => {
+      if (!recipe || recipe.user.toString() !== req.user.id) {
+        req.flash('error_msg', 'Not authorized to delete this recipe');
+        return res.redirect('/recipes/dashboard');
+      }
+      return Recipe.deleteOne({ _id: req.params.id });
+    })
+    .then(() => {
+      req.flash('success_msg', 'Recipe deleted successfully');
+      res.redirect('/recipes/dashboard');
+    })
+    .catch(err => {
+      console.log(err);
+      res.redirect('/recipes/dashboard');
+    });
+
+});
+
+
+router.get('/my', (req, res) => {
+
+  if (!req.user) {
+    return res.redirect('/users/login');
+  }
+
+  
+  Recipe.find({ user: req.user._id })
+    .lean()
+    .then((recipes) => {
+      res.render('recipes/my', { recipes });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.render('error/500');
+    });
+});
+
+router.get('/', (req, res) => {
+  Recipe.find({})
+    .then((recipes) => {
+      res.render('recipes/index', { recipes }); 
+    })
+    .catch((err) => {
+      console.log(err);
+      res.render('error/500');
     });
 });
 

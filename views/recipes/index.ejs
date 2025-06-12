@@ -1,0 +1,30 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+  <h2>All Recipes</h2>
+
+  <% if (recipes.length === 0) { %>
+    <p>No recipes found.</p>
+  <% } else { %>
+    <div class="row">
+      <% recipes.forEach(function(recipe) { %>
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <% if (recipe.image) { %>
+              <img src="<%= recipe.image %>" class="card-img-top" alt="Recipe Image">
+            <% } %>
+            <div class="card-body">
+              <h5 class="card-title"><%= recipe.title %></h5>
+              <p><strong>Ingredients:</strong> <%= recipe.ingredients %></p>
+              <p><strong>Instructions:</strong> <%= recipe.instructions %></p>
+              <p><small>Date: <%= recipe.createdAt.toDateString() %></small></p>
+              
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

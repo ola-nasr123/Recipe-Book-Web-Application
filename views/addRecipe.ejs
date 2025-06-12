@@ -1,4 +1,4 @@
-<% layout('layout') -%>
+<%- include('partials/header') %>
 
 <h2>Add a new recipe</h2>
 <form action="/recipes" method="POST">
@@ -16,7 +16,7 @@
   </div>
   <div class="mb-3">
     <label>Image link (optional)</label>
-    <input type="text" name="image" class="form-control">
+   <input type="text" name="image" placeholder="Image URL">
   </div>
   <button class="btn btn-success">Save</button>
 </form>
